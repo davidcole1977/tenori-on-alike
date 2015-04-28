@@ -14,6 +14,7 @@ Watch this space...
 
 ## Dependencies
 * [node](https://nodejs.org/)
+* [grunt](http://gruntjs.com/)
 
 ## Basic useage
 
