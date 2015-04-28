@@ -48,7 +48,7 @@
       });
 
       callback();
-    }
+    };
 
     function getNthRoot (value, n) {
       return Math.pow(value, 1 / n);
@@ -179,9 +179,9 @@
           that.audioContext.decodeAudioData(request.response, function(buffer) {
             that.buffers[index] = buffer;
           });
-        }
+        };
         request.send();
-      })
+      });
     };
 
     SimpleSampleSet.prototype.playSound = function (scale, soundIndex, volume) {
@@ -306,7 +306,7 @@
           if (layerIndex === this.get('currentLayerIndex')) {
             return this.get('currentLayer').colour;
           } else {
-            return '#ccc'
+            return '#ccc';
           }
         }
 
@@ -377,7 +377,7 @@
         ractive.set('playHeadPos', nextPlayheadPos);
 
         playheadTimeout = window.setTimeout(advancePlayhead, getPlayheadInterval(ractive.get('bpm'), ractive.get('notesPerBeat')));
-      };
+      }
 
       playheadTimeout = window.setTimeout(advancePlayhead, getPlayheadInterval(ractive.get('bpm')));
 

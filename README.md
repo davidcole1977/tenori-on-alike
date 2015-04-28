@@ -17,18 +17,13 @@ Watch this space...
 
 ## Basic useage
 
-App files live in `app/`
-
 ### Set up
 
 ```bash
 $ npm install
+$ grunt
 ```
 
-### Starting the dev server
+App files live in `src/` and are compiled / copied into `_app/` by the grunt task. Don't edit `_app/` directly, as this will get deleted every time the default grunt task is run.
 
-```bash
-$ node start-server
-```
-
-Visit http://localhost:3000 and have a play :)
+The default grunt task spins up a very basic static dev server — visit http://localhost:3000 and have a play :)
