@@ -1,0 +1,66 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title></title>
+
+        <meta name="description" content="">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+
+      <div id="gridContainer"></div>
+
+      <script id="gridTemplate" type="text/ractive">
+
+        <div id="controls">
+
+          <button on-click="startPlayhead">play</button>
+          <button on-click="pausePlayhead">pause</button>
+          <button on-click="stopPlayhead">stop</button>
+          <button on-click="clearGrid">clear layer</button>
+          <input value="{{bpm}}" style="width: 50px;" on-keyup="changeBPM"/><label>BPM</label>
+          <button on-click="setInstument:simpleSine">simple sine</button>
+          <button on-click="setInstument:simpleBleep">simple bleep</button>
+          <button on-click="setInstument:simpleDrums">simple drums</button>
+
+          {{currentLayer.instrument}}
+
+          <div>
+            {{#layers:layerIndex}}
+              <button on-click="changeLayer:{{layerIndex}}" style="background: {{getLayerColour(layerIndex)}}">{{layerIndex + 1}}</button>
+            {{/layers}}
+          </div>
+
+        </div>
+
+        {{#currentLayer}}
+          {{#grid}}
+            <svg id="grid" style="width: 800px; height: 800px; background: #000000;">
+              
+              {{#each cols:colIndex}}
+                {{#each rows:rowIndex}}
+                  <rect x="{{colIndex * 50}}" y="{{750 - (rowIndex * 50)}}" width="50" height="50" rx="20" ry="20" fill="{{getCellColour(isSelected, colIndex)}}" stroke="#000000" style="stroke-width: 5px;" on-mousedown="selectCell"></rect>
+                {{/each}}
+              {{/each}}
+
+            </svg>
+          {{/grid}}
+          {{/currentLayer}}
+
+      </script>
+
+        <script src="js/vendor/ractive-0.7.3.js"></script>
+        <script scr="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+        <script src="js/main.js"></script>
+
+    </body>
+</html>
