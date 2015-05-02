@@ -30,3 +30,7 @@ $ grunt
 App files live in `src/` and are compiled / copied into `_app/` by the grunt task. Don't edit `_app/` directly, as this will get deleted every time the default grunt task is run.
 
 The default grunt task spins up a very basic static dev server — visit http://localhost:3000 and have a play :)
+
+## Known issues
+
+* Currently doesn't work on Safari.
