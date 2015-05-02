@@ -1,5 +1,8 @@
 (function () {
 
+  var ScaleFactory = require('./modules/scaleFactory');
+  var InstrumentFactory = require('./modules/instrumentFactory');
+
   function onDOMReady () {
 
     var conf = {
@@ -50,150 +53,14 @@
       callback();
     };
 
-    function getNthRoot (value, n) {
-      return Math.pow(value, 1 / n);
-    }
-
-    var TWELFTH_ROOT = getNthRoot(2, 12);
-    var OCTAVE_INTERVAL = 12;
-    var FIFTH_INTERVAL = 7;
-
-    // ref: http://www.phy.mtu.edu/~suits/NoteFreqCalcs.html
-    // http://www.phy.mtu.edu/~suits/notefreqs.html
-
-    // get the frequency of a note that's a given number of intervals away from the reference frequency (interval can be negative)
-    function getFrequency (reference, interval) {
-      reference = (typeof reference !== 'undefined') ? reference : 440; // 440Hz = middle A
-      
-      var frequency = reference * Math.pow(TWELFTH_ROOT, interval);
-
-      return frequency;
-    }
-
-    // scales:
-    // major
-    // minor forms
-    // blues
-    // chromatic
-    // whole tone
-    // pentatonic:
-    // http://en.wikipedia.org/wiki/Pentatonic_scale#Types_of_pentatonic_scales
-    // 
-
-    var CMajorScale = [
-      130.81, // C3
-      146.83, // D3
-      164.81, // E3
-      174.61, // F3
-      196.00, // G3
-      220.00, // A3
-      246.94, // B3
-      261.63, // C4
-      293.66, // D4
-      329.63, // E4
-      349.23, // F4
-      392.00, // G4
-      440.00, // A4
-      493.88, // B4
-      523.25, // C5 
-      587.33 // D5
-    ];
-
     scales = {
-      'C Major': CMajorScale
-    };
-
-    getAudioContext = (function () {
-      var context = null;
-
-      window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-      function createContext () {
-        return new window.AudioContext();
-      }
-
-      function getContext () {
-        if (context === null) {
-          context = createContext();
-        }
-
-        return context;
-      }
-
-      return getContext;
-    })();
-
-    function SimpleSynthesizer (options) {
-      this.audioContext = getAudioContext();
-
-      this.oscillatorType = options.oscillatorType || 'sine'; // sine, square, sawtooth, triangle
-
-      this.attackTime = (options.attackTime || 0); // attack volume is always 1
-      this.decayTime = (options.decayTime || 0) + this.attackTime; // decays to sustain volume
-      this.sustainTime = (options.sustainTime || 0) + this.decayTime;
-      this.sustainVolume = options.sustainVolume || 1;
-      this.releaseTime = (options.releaseTime || 0.1) + this.sustainTime; // release volume is always 0
-    }
-
-    SimpleSynthesizer.prototype.playSound = function (scale, soundIndex, volume) {
-      var oscillator = this.audioContext.createOscillator();
-      var gainNode = this.audioContext.createGain();
-
-      oscillator.type = this.oscillatorType;
-      oscillator.frequency.value = scale[soundIndex]; // hertz
-      gainNode.connect(this.audioContext.destination);
-      oscillator.connect(gainNode);
-
-      gainNode.gain.value = 0;
-
-      oscillator.start(0);
-      gainNode.gain.setValueAtTime(0.001, this.audioContext.currentTime); // initial
-      gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + this.attackTime); // attack
-      gainNode.gain.linearRampToValueAtTime(this.sustainVolume * volume, this.audioContext.currentTime + this.decayTime); // decay
-      gainNode.gain.setValueAtTime(this.sustainVolume * volume, this.audioContext.currentTime + this.sustainTime); // sustain
-      gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + this.releaseTime); // release
-      oscillator.stop(this.audioContext.currentTime + this.releaseTime); // kill
-    };
-
-    function SimpleSampleSet (options) {
-      this.audioContext = getAudioContext();
-
-      this.samplesDir = 'ogg/';
-      this.sources = options.sources || [];
-      this.buffers = [];
-
-      this.loadSounds();
-    }
-
-    SimpleSampleSet.prototype.loadSounds = function () {
-      var that = this;
-
-      this.sources.forEach(function (fileName, index) {
-        var request = new XMLHttpRequest();
-        
-        request.open('GET', that.samplesDir + fileName, true);
-        request.responseType = 'arraybuffer';
-
-        // Decode asynchronously
-        request.onload = function() {
-          that.audioContext.decodeAudioData(request.response, function(buffer) {
-            that.buffers[index] = buffer;
-          });
-        };
-        request.send();
-      });
-    };
-
-    SimpleSampleSet.prototype.playSound = function (scale, soundIndex, volume) {
-      var source = this.audioContext.createBufferSource();
-
-      source.buffer = this.buffers[soundIndex];                    
-      source.connect(this.audioContext.destination);
-      source.start(0);   
+      'C Major': ScaleFactory.getScale('major', 'C3', 16),
+      'Ab Chromatic': ScaleFactory.getScale('chromatic', 'Ab3', 16),
+      'F Whole Tone': ScaleFactory.getScale('wholeTone', 'F3', 16),
     };
 
     var instruments = {
-      simpleSine: new SimpleSynthesizer({
+      simpleSine: new InstrumentFactory.SimpleSynthesizer({
         oscillatorType: 'sine',
         attackTime: 0.05,
         decayTime: 0,
@@ -201,7 +68,7 @@
         sustainVolume: 1,
         releaseTime: 0.4
       }),
-      simpleBleep: new SimpleSynthesizer({
+      simpleBleep: new InstrumentFactory.SimpleSynthesizer({
         oscillatorType: 'triangle',
         attackTime: 0.05,
         decayTime: 0,
@@ -209,7 +76,7 @@
         sustainVolume: 1,
         releaseTime: 0.05
       }),
-      simpleDrums: new SimpleSampleSet({
+      simpleDrums: new InstrumentFactory.SimpleSampleSet({
         sources: [
           'CYCdh_Kurz01-Kick01.ogg',
           'CYCdh_Kurz01-Snr02.ogg',
@@ -234,7 +101,7 @@
     function Layer (index) {
       this.grid = new Grid(16, 16);
       this.instrument = 'simpleSine';
-      this.scale = 'C Major';
+      this.scale = 'Ab Chromatic';
       this.colour = conf.layerColours[index];
       this.volume = 0.7; // 0 to 1
     }
