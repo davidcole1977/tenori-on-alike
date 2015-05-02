@@ -4,6 +4,8 @@ A musical grid sequencer based on the Tenori-on from Yamaha, using Ractive JS an
 
 It's very early days, so what's here is a basic proof of concept with a very limited feature set and highly ropey code quality.
 
+It's being used as a learning exercise, so some of the use of patterns and techniques might appear slightly contrived, but should overall result in better code craft.
+
 Watch this space...
 
 ## Demo page
