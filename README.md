@@ -34,3 +34,24 @@ The default grunt task spins up a very basic static dev server — visit http://
 ## Known issues
 
 * Currently doesn't work on Safari.
+
+## Roadmap / ToDo / Wish List
+
+* Move codew from main.js into individual modules as appropriate
+* Unit test all module code as far as possible
+* Put modules in separate GitHub repositories and treat them as project dependencies (using Bower? NPM?)
+* Clear separation between models and views
+* Use MV* pattern / library (backbone? hand rolled?)
+* Create new instruments using factory pattern with a fluent (chainable) interface
+* Allow unit testing in browser context with Phantom JS
+* Realtime collaboration on same instance with socket.io
+* Saving sequences in local storage
+* Saving sequences in cloud storage (AWS? Dropbox?)
+* Visual analysis of output audio stream
+* More options for instruments / synthesizer
+* Mono synthesizer
+* Transposing pitch / scales
+* Different interval types per layer (eg. 4 notes per beat on one layer, one note per beat on another)
+* Different play modes on different layers, similar to tenori-on
+* Layer audio mixer with volume and pan
+* Audio effects, such as reverb and chorus
