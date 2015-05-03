@@ -21,6 +21,7 @@ module.exports = (function () {
   // the sequence of intervals (in semitones) between each note in a given type of scale
   // expressed as an array for each scale
   // we could go on with many other exotic scales, but really, this is plenty for most people
+  // TODO: complete basic set of scales
   scaleDefs.chromatic = [1];
   scaleDefs.wholeTone = [2];
   scaleDefs.major = [2, 2, 1, 2, 2, 2, 1];
@@ -102,11 +103,11 @@ module.exports = (function () {
   };
 
   ScaleFactory.getNoteNameComponents = function(noteString) {
-    return {
-      name: 'A',
-      sharpOrFlat: '',
-      octave: 4
-    };
+    // return {
+    //   name: 'A',
+    //   sharpOrFlat: '',
+    //   octave: 4
+    // };
   };
 
   /*
@@ -114,7 +115,7 @@ module.exports = (function () {
    * such as 'A4', 'C0', 'F#5', 'Gb2', 'Cb7'
    */
 
-  // TODO: put notestring parsing in getNoteNameComponents
+  // TODO: put noteString parsing in getNoteNameComponents
   ScaleFactory.getNoteByName = function (noteString) {
     var noteNameMatch = noteString.match(/^[A-G]/g),
         sharpOrFlatMatch = noteString.match(/[b#]/g),
@@ -143,6 +144,7 @@ module.exports = (function () {
    */
 
   // TODO: get all notes relative to A4
+  // TODO: option to return cents detune adjustments rather than frequency
   ScaleFactory.getScale = function (scaleType, startNote, noteCount) {
     var i,
         scaleDef = scaleDefs[scaleType],
