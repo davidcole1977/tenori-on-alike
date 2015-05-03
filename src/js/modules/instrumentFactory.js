@@ -1,9 +1,13 @@
 module.exports = (function () {
 
-  var audioHelpers = require('./audioHelpers');
+  // TODO: different default gain for synthesised sounds than samples
+  // TODO: ensure samples gracefully load in and don't cause errors if the app attempts to play the sound before it loads (use promises)
+  // TODO: new types of imstruments and ways to play sounds, as per todo list in the readme
+
+  var AudioHelpers = require('./AudioHelpers');
 
   function SimpleSynthesizer (options) {
-    this.audioContext = audioHelpers.getAudioContext();
+    this.audioContext = AudioHelpers.getAudioContext();
 
     this.oscillatorType = options.oscillatorType || 'sine'; // sine, square, sawtooth, triangle
 
@@ -35,7 +39,7 @@ module.exports = (function () {
   };
 
   function SimpleSampleSet (options) {
-    this.audioContext = audioHelpers.getAudioContext();
+    this.audioContext = AudioHelpers.getAudioContext();
 
     this.samplesDir = 'ogg/';
     this.sources = options.sources || [];

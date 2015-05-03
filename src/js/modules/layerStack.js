@@ -1,24 +1,12 @@
 module.exports = (function () {
 
-  function Layer (index) {
-    this.grid = new Grid(16, 16);
-    this.instrument = 'simpleSine';
-    this.scale = 'C Major';
-    this.colour = conf.layerColours[index];
-    this.volume = 0.5; // 0 to 1
-  }
-
-  Layer.prototype.setInstrument = function (instrument) {
-    this.instrument = instrument;
-  };
-
-  Layer.prototype.getInstrument = function (instrument) {
-    return this.instrument;
-  };
+  var Layer = require('./layer').Layer;
 
   function Layers () {
     this.layers = [];
   }
+
+  // Setters
 
   Layers.prototype.addLayer = function () {
     var index = this.getLayerCount();
@@ -33,6 +21,8 @@ module.exports = (function () {
     }
   };
 
+  // Getters
+
   Layers.prototype.getLayerCount = function (index) {
     return this.layers.length;
   };
@@ -41,8 +31,10 @@ module.exports = (function () {
     return this.layers[index];
   };
 
-  return {
+  // module exports
 
+  return {
+    Layers: Layers
   };
   
 }());

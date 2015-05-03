@@ -8,6 +8,10 @@ module.exports = (function () {
     this.isSelected = false;
   };
 
+  Cell.prototype.toggle = function () {
+    this.isSelected = this.isSelected ? false : true;
+  };
+
   function Grid (rowCount, colCount) {
     var row = 0;
     var col = 0;

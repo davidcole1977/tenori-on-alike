@@ -2,56 +2,9 @@
 
   var ScaleFactory = require('./modules/scaleFactory');
   var InstrumentFactory = require('./modules/instrumentFactory');
+  var LayerStack = require('./modules/layerStack');
 
   function onDOMReady () {
-
-    var conf = {
-      layerColours: [
-        '#fc0',
-        '#cf0',
-        '#0fc',
-        '#0cf',
-        '#c0f',
-        '#c96',
-        '#c69',
-        '#9c6'
-      ]
-    };
-
-    function Cell () {
-      this.isSelected = false;
-    }
-
-    Cell.prototype.reset = function () {
-      this.isSelected = false;
-    };
-
-    function Grid (rowCount, colCount) {
-      var row = 0;
-      var col = 0;
-
-      this.cols = [];
-
-      for (col = 0; col < colCount; col += 1) {
-        this.cols[col] = {
-          rows: []
-        };
-
-        for (row = 0; row < rowCount; row += 1) {
-          this.cols[col].rows[row] = new Cell();
-        }
-      }
-    }
-
-    Grid.prototype.reset = function (callback) {
-      this.cols.forEach(function (col) {
-        col.rows.forEach(function (cell) {
-          cell.reset();
-        });
-      });
-
-      callback();
-    };
 
     scales = {
       'C Major': ScaleFactory.getScale('major', 'C3', 16),
@@ -98,54 +51,10 @@
       })
     };
 
-    function Layer (index) {
-      this.grid = new Grid(16, 16);
-      this.instrument = 'simpleSine';
-      this.scale = 'Ab Chromatic';
-      this.colour = conf.layerColours[index];
-      this.volume = 0.7; // 0 to 1
-    }
-
-    Layer.prototype.setInstrument = function (instrument) {
-      this.instrument = instrument;
-    };
-
-    Layer.prototype.getInstrument = function (instrument) {
-      return this.instrument;
-    };
-
-    function Layers () {
-      this.layers = [];
-    }
-
-    Layers.prototype.addLayer = function () {
-      var index = this.getLayerCount();
-      this.layers.push(new Layer(index));
-    };
-
-    Layers.prototype.addLayers = function (layerCount) {
-      var i;
-
-      for (i = 0; i < layerCount; i += 1) {
-        this.addLayer();
-      }
-    };
-
-    Layers.prototype.getLayerCount = function (index) {
-      return this.layers.length;
-    };
-
-    Layers.prototype.getLayer = function (index) {
-      return this.layers[index];
-    };
-
-
-    var layerStack = new Layers();
+    var layerStack = new LayerStack.Layers();
     layerStack.addLayers(8);
 
-    var grid = new Grid(16, 16); // 16 rows, 16 columns, cell dimenions 50px by 50px
-
-    var gridRactive = new Ractive({
+    var sequencerRactive = new Ractive({
       el: '#gridContainer',
       template: '#gridTemplate',
       data: {
@@ -180,25 +89,26 @@
       }
     });
 
-    gridRactive.on('clearGrid', function (event, layerIndex) {
+    sequencerRactive.on('clearGrid', function (event, layerIndex) {
       var that = this;
+
       this.get('currentLayer').grid.reset(function () {
         that.update();
       });
     });
 
-    gridRactive.on('changeLayer', function (event, layerIndex) {
+    sequencerRactive.on('changeLayer', function (event, layerIndex) {
       this.set('currentLayer', this.get('layerStack').getLayer(layerIndex));
       this.set('currentLayerIndex', layerIndex);
     });
 
-    gridRactive.on('selectCell', function (event) {
+    sequencerRactive.on('selectCell', function (event) {
       var selected = event.context.isSelected  ? false : true;
 
       this.set(event.keypath + '.isSelected', selected);
     });
 
-    gridRactive.on('setInstument', function (event, instrument) {
+    sequencerRactive.on('setInstument', function (event, instrument) {
       this.set('currentLayer.instrument', instrument);
     });
 
@@ -223,50 +133,50 @@
 
     var playheadTimeout = null;
 
-    gridRactive.on('startPlayhead', function (event) {
+    sequencerRactive.on('startPlayhead', function (event) {
       if (this.get('isPlaying')) {
         return;
       }
 
       var bpm = this.get('bpm'); 
-      var ractive = this;
+      var that = this;
 
       function advancePlayhead () {
-        var currentPlayheadPos = ractive.get('playHeadPos');
+        var currentPlayheadPos = that.get('playHeadPos');
         var nextPlayheadPos = currentPlayheadPos < 15 ? currentPlayheadPos + 1 : 0;
 
-        if (!ractive.get('isPlaying')) {
+        if (!that.get('isPlaying')) {
           return;
         }
 
-        playCurrentSounds(ractive);
+        playCurrentSounds(that);
 
-        ractive.set('playHeadPos', nextPlayheadPos);
+        that.set('playHeadPos', nextPlayheadPos);
 
-        playheadTimeout = window.setTimeout(advancePlayhead, getPlayheadInterval(ractive.get('bpm'), ractive.get('notesPerBeat')));
+        playheadTimeout = window.setTimeout(advancePlayhead, getPlayheadInterval(that.get('bpm'), that.get('notesPerBeat')));
       }
 
-      playheadTimeout = window.setTimeout(advancePlayhead, getPlayheadInterval(ractive.get('bpm')));
+      playheadTimeout = window.setTimeout(advancePlayhead, getPlayheadInterval(that.get('bpm')));
 
-      gridRactive.set('isPlaying', true);
-      gridRactive.set('isPaused', false);
+      sequencerRactive.set('isPlaying', true);
+      sequencerRactive.set('isPaused', false);
     });
 
-    gridRactive.on('pausePlayhead', function (event) {
-      gridRactive.set('isPlaying', false);
-      gridRactive.set('isPaused', true);
+    sequencerRactive.on('pausePlayhead', function (event) {
+      this.set('isPlaying', false);
+      this.set('isPaused', true);
     });
 
-    gridRactive.on('changeBPM', function (event) {
+    sequencerRactive.on('changeBPM', function (event) {
       window.clearTimeout(playheadTimeout);
       this.set('isPlaying', false);
       this.fire('startPlayhead');
     });
 
-    gridRactive.on('stopPlayhead', function (event) {
-      gridRactive.set('playHeadPos', 0);
-      gridRactive.set('isPlaying', false);
-      gridRactive.set('isPaused', false);
+    sequencerRactive.on('stopPlayhead', function (event) {
+      this.set('playHeadPos', 0);
+      this.set('isPlaying', false);
+      this.set('isPaused', false);
     });
 
   }

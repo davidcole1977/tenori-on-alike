@@ -71,3 +71,6 @@ The default grunt task spins up a very basic static dev server — visit http://
 * finish work on sample factory
 * eliminate clipping in synthesied sounds (see http://chimera.labs.oreilly.com/books/1234000001552/ch03.html#s03_4)
 * pitched sample=-based instruments rather than just playing single, isolated samples (multiple samples?)
+* scalefactory option to return pitch values as cents?
+* link different grids together in different ways to make more sophisticated sequences
+* option for 12x12 or 24x24 grid to allow time signatures like 3/4 & 6/8
