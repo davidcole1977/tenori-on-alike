@@ -19,12 +19,10 @@ module.exports = (function () {
     this.cols = [];
 
     for (col = 0; col < colCount; col += 1) {
-      this.cols[col] = {
-        rows: []
-      };
+      this.cols[col] = [];
 
       for (row = 0; row < rowCount; row += 1) {
-        this.cols[col].rows[row] = new Cell();
+        this.cols[col][row] = new Cell();
       }
     }
   }

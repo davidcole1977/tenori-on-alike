@@ -2,7 +2,7 @@ module.exports = (function () {
 
   var Grid = require('./grid').Grid;
 
- var conf = {
+  var conf = {
     layerColours: [
       '#fc0',
       '#cf0',
@@ -20,7 +20,7 @@ module.exports = (function () {
     this.instrument = 'simpleSine';
     this.scale = 'C Major';
     this.colour = conf.layerColours[index];
-    this.volume = 0.5; // 0 to 1
+    this.volume = 1; // 0 to 1
   }
 
   // Layer setters

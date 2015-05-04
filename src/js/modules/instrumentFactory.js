@@ -1,13 +1,17 @@
 module.exports = (function () {
 
-  // TODO: different default gain for synthesised sounds than samples
+  // TODO: turn into chained / fluent interface for creating new instruments
+  // TODO: create unit tests for creating instruments and setting options
+  // TODO: export makeSimpleSynthesizer instead of SimpleSynthesizer
   // TODO: ensure samples gracefully load in and don't cause errors if the app attempts to play the sound before it loads (use promises)
-  // TODO: new types of imstruments and ways to play sounds, as per todo list in the readme
+  // TODO: new types of instruments and ways to play sounds, as per todo list in the readme
 
   var AudioHelpers = require('./AudioHelpers');
 
   function SimpleSynthesizer (options) {
     this.audioContext = AudioHelpers.getAudioContext();
+
+    this.baseVolume = 0.4; // oscillator based sounds are really LOUD!
 
     this.oscillatorType = options.oscillatorType || 'sine'; // sine, square, sawtooth, triangle
 
@@ -18,9 +22,50 @@ module.exports = (function () {
     this.releaseTime = (options.releaseTime || 0.1) + this.sustainTime; // release volume is always 0
   }
 
+  SimpleSynthesizer.makeSimpleSynthesizer = function () {
+    return new SimpleSynthesizer();
+  };
+
+  SimpleSynthesizer.prototype.setBaseVolume = function (baseVolume) {
+    this.baseVolume = baseVolume;
+    return this;
+  };
+
+  SimpleSynthesizer.prototype.setOscillatorType = function (oscillatorType) {
+    this.oscillatorType = oscillatorType;
+    return this;
+  };
+
+  SimpleSynthesizer.prototype.setAttackTime = function (attackTime) {
+    this.attackTime = attackTime;
+    return this;
+  };
+
+  SimpleSynthesizer.prototype.setDecayTime = function (decayTime) {
+    this.decayTime = decayTime;
+    return this;
+  };
+
+  SimpleSynthesizer.prototype.setSustainTime = function (sustainTime) {
+    this.sustainTime = sustainTime;
+    return this;
+  };
+
+  SimpleSynthesizer.prototype.setSustainVolume= function (sustainVolume) {
+    this.sustainVolume = sustainVolume;
+    return this;
+  };
+
+  SimpleSynthesizer.prototype.setReleaseTime = function (releaseTime) {
+    this.releaseTime = releaseTime;
+    return this;
+  };
+
+
   SimpleSynthesizer.prototype.playSound = function (scale, soundIndex, volume) {
     var oscillator = this.audioContext.createOscillator();
     var gainNode = this.audioContext.createGain();
+    var adjustedVolume = this.baseVolume * volume;
 
     oscillator.type = this.oscillatorType;
     oscillator.frequency.value = scale[soundIndex]; // hertz
@@ -31,15 +76,17 @@ module.exports = (function () {
 
     oscillator.start(0);
     gainNode.gain.setValueAtTime(0.001, this.audioContext.currentTime); // initial
-    gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + this.attackTime); // attack
-    gainNode.gain.linearRampToValueAtTime(this.sustainVolume * volume, this.audioContext.currentTime + this.decayTime); // decay
-    gainNode.gain.setValueAtTime(this.sustainVolume * volume, this.audioContext.currentTime + this.sustainTime); // sustain
+    gainNode.gain.linearRampToValueAtTime(adjustedVolume, this.audioContext.currentTime + this.attackTime); // attack
+    gainNode.gain.linearRampToValueAtTime(this.sustainVolume * adjustedVolume, this.audioContext.currentTime + this.decayTime); // decay
+    gainNode.gain.setValueAtTime(this.sustainVolume * adjustedVolume, this.audioContext.currentTime + this.sustainTime); // sustain
     gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + this.releaseTime); // release
     oscillator.stop(this.audioContext.currentTime + this.releaseTime); // kill
   };
 
   function SimpleSampleSet (options) {
     this.audioContext = AudioHelpers.getAudioContext();
+
+    this.baseVolume = 1;
 
     this.samplesDir = 'ogg/';
     this.sources = options.sources || [];
@@ -69,9 +116,14 @@ module.exports = (function () {
 
   SimpleSampleSet.prototype.playSound = function (scale, soundIndex, volume) {
     var source = this.audioContext.createBufferSource();
+    var adjustedVolume = this.baseVolume * volume;
+    var gainNode = this.audioContext.createGain();
 
-    source.buffer = this.buffers[soundIndex];                    
-    source.connect(this.audioContext.destination);
+    gainNode.gain.value = adjustedVolume;
+
+    source.buffer = this.buffers[soundIndex]; 
+    gainNode.connect(this.audioContext.destination);
+    source.connect(gainNode);
     source.start(0);   
   };
 

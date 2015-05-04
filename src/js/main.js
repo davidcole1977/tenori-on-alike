@@ -112,13 +112,13 @@
       this.set('currentLayer.instrument', instrument);
     });
 
-    function playCurrentSounds (ractive) {
-      var layers = ractive.get('layers');
-      var playheadPos = ractive.get('playHeadPos');
+    function playCurrentSounds (sequencerRactiveInstance) {
+      var layers = sequencerRactiveInstance.get('layers');
+      var playheadPos = sequencerRactiveInstance.get('playHeadPos');
 
       
       layers.forEach(function (layer) {
-        layer.grid.cols[playheadPos].rows.forEach(function (cell, rowIndex) {
+        layer.grid.cols[playheadPos].forEach(function (cell, rowIndex) {
           if (cell.isSelected) {
             instruments[layer.instrument].playSound(scales[layer.scale], rowIndex, layer.volume);
           }
