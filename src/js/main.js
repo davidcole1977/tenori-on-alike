@@ -13,22 +13,8 @@
     };
 
     var instruments = {
-      simpleSine: new InstrumentFactory.SimpleSynthesizer({
-        oscillatorType: 'sine',
-        attackTime: 0.05,
-        decayTime: 0,
-        sustainTime: 0,
-        sustainVolume: 1,
-        releaseTime: 0.4
-      }),
-      simpleBleep: new InstrumentFactory.SimpleSynthesizer({
-        oscillatorType: 'triangle',
-        attackTime: 0.05,
-        decayTime: 0,
-        sustainTime: 0,
-        sustainVolume: 1,
-        releaseTime: 0.05
-      }),
+      simpleSine: InstrumentFactory.makeSynth().setOscillatorType('sine').setAttackTime(0.05).setDecayTime(0).setSustainTime(0).setReleaseTime(0.4),
+      simpleBleep: InstrumentFactory.makeSynth().setOscillatorType('triangle').setAttackTime(0.05).setDecayTime(0).setSustainTime(0).setReleaseTime(0.05),
       simpleDrums: new InstrumentFactory.SimpleSampleSet({
         sources: [
           'CYCdh_Kurz01-Kick01.ogg',

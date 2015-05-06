@@ -8,21 +8,20 @@ module.exports = (function () {
 
   var AudioHelpers = require('./AudioHelpers');
 
-  function SimpleSynthesizer (options) {
+  function SimpleSynthesizer () {
     this.audioContext = AudioHelpers.getAudioContext();
-
+    
+    // default sound settings
     this.baseVolume = 0.4; // oscillator based sounds are really LOUD!
-
-    this.oscillatorType = options.oscillatorType || 'sine'; // sine, square, sawtooth, triangle
-
-    this.attackTime = (options.attackTime || 0); // attack volume is always 1
-    this.decayTime = (options.decayTime || 0) + this.attackTime; // decays to sustain volume
-    this.sustainTime = (options.sustainTime || 0) + this.decayTime;
-    this.sustainVolume = options.sustainVolume || 1;
-    this.releaseTime = (options.releaseTime || 0.1) + this.sustainTime; // release volume is always 0
+    this.oscillatorType = 'sine';
+    this.attackTime = 0; // attack volume is always 1
+    this.decayTime = 0; // decays to sustain volume
+    this.sustainTime = 0;
+    this.sustainVolume = 1;
+    this.releaseTime = 0.1; // release volume is always 0
   }
 
-  SimpleSynthesizer.makeSimpleSynthesizer = function () {
+  SimpleSynthesizer.makeSynth = function () {
     return new SimpleSynthesizer();
   };
 
@@ -67,6 +66,11 @@ module.exports = (function () {
     var gainNode = this.audioContext.createGain();
     var adjustedVolume = this.baseVolume * volume;
 
+    var adjustedAttackTime = this.attackTime;
+    var adjustedDecayTime = this.decayTime + adjustedAttackTime;
+    var adjustedSustainTime = this.sustainTime + adjustedDecayTime;
+    var adjustedReleaseTime = this.releaseTime + adjustedSustainTime;
+
     oscillator.type = this.oscillatorType;
     oscillator.frequency.value = scale[soundIndex]; // hertz
     gainNode.connect(this.audioContext.destination);
@@ -76,11 +80,11 @@ module.exports = (function () {
 
     oscillator.start(0);
     gainNode.gain.setValueAtTime(0.001, this.audioContext.currentTime); // initial
-    gainNode.gain.linearRampToValueAtTime(adjustedVolume, this.audioContext.currentTime + this.attackTime); // attack
-    gainNode.gain.linearRampToValueAtTime(this.sustainVolume * adjustedVolume, this.audioContext.currentTime + this.decayTime); // decay
-    gainNode.gain.setValueAtTime(this.sustainVolume * adjustedVolume, this.audioContext.currentTime + this.sustainTime); // sustain
-    gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + this.releaseTime); // release
-    oscillator.stop(this.audioContext.currentTime + this.releaseTime); // kill
+    gainNode.gain.linearRampToValueAtTime(adjustedVolume, this.audioContext.currentTime + adjustedAttackTime); // attack
+    gainNode.gain.linearRampToValueAtTime(this.sustainVolume * adjustedVolume, this.audioContext.currentTime + adjustedDecayTime); // decay
+    gainNode.gain.setValueAtTime(this.sustainVolume * adjustedVolume, this.audioContext.currentTime + adjustedSustainTime); // sustain
+    gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + adjustedReleaseTime); // release
+    oscillator.stop(this.audioContext.currentTime + adjustedReleaseTime); // kill
   };
 
   function SimpleSampleSet (options) {
@@ -129,7 +133,7 @@ module.exports = (function () {
 
   return {
     SimpleSampleSet: SimpleSampleSet,
-    SimpleSynthesizer: SimpleSynthesizer
+    makeSynth: SimpleSynthesizer.makeSynth
   };
   
 }());
