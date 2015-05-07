@@ -37,18 +37,27 @@ The default grunt task spins up a very basic static dev server — visit http://
 
 ## Roadmap / ToDo / Wish List
 
+### Next up:
+
+* Add ability to get scales in cents as well as hertz in scaleFactory
+* Finish scale factory, finish unit testing, give it a little polish
+* Stick it in a separate Git repo and include it as a dependency using NPM
+
+### Then I'll be picking from:
+
+* Unit test instrumentfactory
+* Create proper separation between model & view using hand-rolled solution (backbone style? Minimum = basic pubsub)
+* Realtime collaboration using node.js and socket.io
+* Store layer data using indexedDB
+* IndexedDB wrapper module with promises (like dexy_)
 * Move code from main.js into individual modules as appropriate
 * Unit test all module code as far as possible
 * Code coverage analysis (Istanbul?)
 * Put modules in separate GitHub repositories and treat them as project dependencies (using Bower? NPM?)
-* Complete the refactoring of 
-* Clear separation between models and views
 * Nice looking visual interface with previews of each layer
 * refactor the reactive instance to be prettier, nicer, more maintainable
-* Use MV* pattern / library (backbone? hand rolled?)
 * Create new instruments using factory pattern with a fluent (chainable) interface
 * Allow unit testing in browser context with Phantom JS
-* Realtime collaboration using node.js and socket.io
 * Saving sequences in local storage
 * Saving sequences in cloud storage (AWS? Dropbox?)
 * Visual analysis of output audio stream
@@ -65,12 +74,11 @@ The default grunt task spins up a very basic static dev server — visit http://
 * Continuous notes instrument option (eg. the first selected grid cell starts the note, the subsequent selected cell stops it)
 * set allowable polyphony level on instrument (eg. up to 3 notes sounding at one, unlimited, monophonic)
 * Get it working on and optimised for touch-based tablets.
-* Capture user samples via microphone etc.
+* Capture user samples via microphone, file system etc.
 * handle audio sample async loading appropriately. use promises.
 * default gain for sample-based audio should be 1. For synthesised audio, far lower (0.5?)
 * finish work on sample factory
 * eliminate clipping in synthesied sounds (see http://chimera.labs.oreilly.com/books/1234000001552/ch03.html#s03_4)
 * pitched sample=-based instruments rather than just playing single, isolated samples (multiple samples?)
-* scalefactory option to return pitch values as cents?
 * link different grids together in different ways to make more sophisticated sequences
 * option for 12x12 or 24x24 grid to allow time signatures like 3/4 & 6/8
