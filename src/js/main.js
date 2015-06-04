@@ -1,16 +1,17 @@
 (function () {
 
-  var ScaleFactory = require('./modules/scaleFactory');
+  var ScaleMaker = require('scale-maker');
   var InstrumentFactory = require('./modules/instrumentFactory');
   var LayerStack = require('./modules/layerStack');
+  var _ = require('lodash');
 
   function onDOMReady () {
+    var scaleNames = ScaleMaker.getScaleNames(),
+        scales = {};
 
-    scales = {
-      'C Major': ScaleFactory.getScale('major', 'C3', 16),
-      'Ab Chromatic': ScaleFactory.getScale('chromatic', 'Ab3', 16),
-      'F Whole Tone': ScaleFactory.getScale('wholeTone', 'F3', 16),
-    };
+    scaleNames.forEach(function (scaleName)  {
+      scales[scaleName] = ScaleMaker.makeScale(scaleName, 'C3', 16).inHertz;
+    });
 
     var instruments = {
       simpleSine: InstrumentFactory.makeSynth().setOscillatorType('sine').setAttackTime(0.05).setDecayTime(0).setSustainTime(0).setReleaseTime(0.4),
@@ -37,8 +38,18 @@
       })
     };
 
+    var instrumentNames = [];
+
+    _.forOwn(instruments, function (instrumentObject, instrumentName) {
+      instrumentNames.push(instrumentName);
+    });
+
     var layerStack = new LayerStack.Layers();
+
     layerStack.addLayers(8);
+    layerStack.getLayers().forEach(function (layer) {
+      layer.setInstrument('simpleSine');
+    });
 
     var sequencerRactive = new Ractive({
       el: '#gridContainer',
@@ -53,6 +64,9 @@
         isPaused: false,
         bpm: 80, // BPM,
         notesPerBeat: 4, // notes per beat
+        instrumentNames: instrumentNames,
+        scaleNames: scaleNames,
+        currentScale: 'kuomiPentatonic',
 
         getCellColour: function (isSelected, colIndex) {
           if (isSelected || (colIndex === this.get('playHeadPos') && this.get('isPlaying'))) {
@@ -94,19 +108,20 @@
       this.set(event.keypath + '.isSelected', selected);
     });
 
-    sequencerRactive.on('setInstument', function (event, instrument) {
-      this.set('currentLayer.instrument', instrument);
-    });
+    // sequencerRactive.on('setInstument', function (event, instrument) {
+    //   this.set('currentLayer.instrument', instrument);
+    // });
 
     function playCurrentSounds (sequencerRactiveInstance) {
       var layers = sequencerRactiveInstance.get('layers');
       var playheadPos = sequencerRactiveInstance.get('playHeadPos');
+      var currentScale = sequencerRactiveInstance.get('currentScale');
 
       
       layers.forEach(function (layer) {
         layer.grid.cols[playheadPos].forEach(function (cell, rowIndex) {
           if (cell.isSelected) {
-            instruments[layer.instrument].playSound(scales[layer.scale], rowIndex, layer.volume);
+            instruments[layer.instrument].playSound(scales[currentScale][rowIndex], rowIndex, layer.volume);
           }
         });
       });

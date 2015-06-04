@@ -22,5 +22,8 @@
     "grunt-sass": "^0.18.1",
     "lodash": "^3.7.0",
     "mocha": "^2.2.4"
+  },
+  "dependencies": {
+    "scale-maker": "^0.2.0"
   }
 }

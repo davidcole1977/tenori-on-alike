@@ -17,13 +17,11 @@ module.exports = (function () {
 
   function Layer (index) {
     this.grid = new Grid(16, 16);
-    this.instrument = 'simpleSine';
-    this.scale = 'C Major';
+    this.instrument = null;
+    this.scale = null;
     this.colour = conf.layerColours[index];
     this.volume = 1; // 0 to 1
   }
-
-  // Layer setters
 
   Layer.prototype.setInstrument = function (instrument) {
     this.instrument = instrument;
@@ -32,11 +30,6 @@ module.exports = (function () {
 
   Layer.prototype.setVolume = function (volume) {
     this.volume = volume;
-    return this; // allow chaining when setting properties
-  };
-
-  Layer.prototype.setScale = function (scale) {
-    this.scale = scale;
     return this; // allow chaining when setting properties
   };
 
@@ -53,10 +46,6 @@ module.exports = (function () {
 
   Layer.prototype.getVolume = function () {
     return this.volume;
-  };
-
-  Layer.prototype.getScale = function () {
-    return this.scale;
   };
 
   Layer.prototype.getColour = function () {

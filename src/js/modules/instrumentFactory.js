@@ -61,7 +61,7 @@ module.exports = (function () {
   };
 
 
-  SimpleSynthesizer.prototype.playSound = function (scale, soundIndex, volume) {
+  SimpleSynthesizer.prototype.playSound = function (noteInHertz, soundIndex, volume) {
     var oscillator = this.audioContext.createOscillator();
     var gainNode = this.audioContext.createGain();
     var adjustedVolume = this.baseVolume * volume;
@@ -72,7 +72,7 @@ module.exports = (function () {
     var adjustedReleaseTime = this.releaseTime + adjustedSustainTime;
 
     oscillator.type = this.oscillatorType;
-    oscillator.frequency.value = scale[soundIndex]; // hertz
+    oscillator.frequency.value = noteInHertz; // hertz
     gainNode.connect(this.audioContext.destination);
     oscillator.connect(gainNode);
 
@@ -118,7 +118,7 @@ module.exports = (function () {
     });
   };
 
-  SimpleSampleSet.prototype.playSound = function (scale, soundIndex, volume) {
+  SimpleSampleSet.prototype.playSound = function (noteInHertz, soundIndex, volume) {
     var source = this.audioContext.createBufferSource();
     var adjustedVolume = this.baseVolume * volume;
     var gainNode = this.audioContext.createGain();

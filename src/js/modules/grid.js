@@ -28,8 +28,8 @@ module.exports = (function () {
   }
 
   Grid.prototype.reset = function (callback) {
-    this.cols.forEach(function (col) {
-      col.rows.forEach(function (cell) {
+    this.cols.forEach(function (cells) {
+      cells.forEach(function (cell) {
         cell.reset();
       });
     });

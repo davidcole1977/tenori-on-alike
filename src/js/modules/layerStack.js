@@ -31,6 +31,10 @@ module.exports = (function () {
     return this.layers[index];
   };
 
+  Layers.prototype.getLayers = function () {
+    return this.layers;
+  };
+
   // module exports
 
   return {

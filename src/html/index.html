@@ -1,10 +1,10 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js" lang="en-GB">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-        <title></title>
+        <title>tenori-on-alike</title>
 
         <meta name="description" content="">
 
@@ -28,11 +28,18 @@
           <button on-click="stopPlayhead">stop</button>
           <button on-click="clearGrid">clear layer</button>
           <input value="{{bpm}}" style="width: 50px;" on-keyup="changeBPM"/><label>BPM</label>
-          <button on-click="setInstument:simpleSine">simple sine</button>
-          <button on-click="setInstument:simpleBleep">simple bleep</button>
-          <button on-click="setInstument:simpleDrums">simple drums</button>
 
-          {{currentLayer.instrument}}
+          <select value='{{currentLayer.instrument}}'>
+            {{#instrumentNames}}
+              <option value='{{.}}'>{{.}}</option>
+            {{/instrumentNames}}
+          </select>
+
+          <select value='{{currentScale}}'>
+            {{#scaleNames}}
+              <option value='{{.}}'>{{.}}</option>
+            {{/scaleNames}}
+          </select>
 
           <div>
             {{#layers:layerIndex}}
