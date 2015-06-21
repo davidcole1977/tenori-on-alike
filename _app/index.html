@@ -1,0 +1,72 @@
+<!doctype html>
+<html class="no-js" lang="en-GB">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title>tenori-on-alike</title>
+
+        <meta name="description" content="">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+
+      <div id="gridContainer"></div>
+
+      <script id="gridTemplate" type="text/ractive">
+
+        <div id="controls">
+
+          <button on-click="startPlayhead">play</button>
+          <button on-click="pausePlayhead">pause</button>
+          <button on-click="stopPlayhead">stop</button>
+          <button on-click="clearGrid">clear layer</button>
+          <input value="{{bpm}}" style="width: 50px;" on-keyup="changeBPM"/><label>BPM</label>
+
+          <select value='{{currentLayer.instrument}}'>
+            {{#instrumentNames}}
+              <option value='{{.}}'>{{.}}</option>
+            {{/instrumentNames}}
+          </select>
+
+          <select value='{{currentScale}}'>
+            {{#scaleNames}}
+              <option value='{{.}}'>{{.}}</option>
+            {{/scaleNames}}
+          </select>
+
+          <div>
+            {{#layers:layerIndex}}
+              <button on-click="changeLayer:{{layerIndex}}" style="background: {{getLayerColour(layerIndex)}}">{{layerIndex + 1}}</button>
+            {{/layers}}
+          </div>
+
+        </div>
+
+        {{#currentLayer}}
+          {{#grid}}
+            <svg id="grid" style="width: 800px; height: 800px; background: #000000;">
+              
+              {{#cols:col}}
+                {{#cols[col]:row}}
+                  <rect x="{{col * 50}}" y="{{750 - (row * 50)}}" width="50" height="50" rx="20" ry="20" fill="{{getCellColour(isSelected, col)}}" stroke="#000000" style="stroke-width: 5px;" on-mousedown="selectCell"></rect>
+                {{/cols[]}}
+              {{/cols}}
+
+            </svg>
+          {{/grid}}
+          {{/currentLayer}}
+
+      </script>
+
+        <script src="js/vendor/ractive-0.7.3.js"></script>
+        <script src="js/main.js"></script>
+
+    </body>
+</html>

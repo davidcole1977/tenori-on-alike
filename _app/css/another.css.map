@@ -1,0 +1,10 @@
+{
+	"version": 3,
+	"file": "another.css",
+	"sources": [
+		"../../another.scss"
+	],
+	"sourcesContent": [],
+	"mappings": "AAEA,AAAqB;EACjB,AAAO",
+	"names": []
+}
