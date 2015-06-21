@@ -10,7 +10,7 @@ Watch this space...
 
 ## Demo page
 
-[http://davidcole1977.github.io/tenori-on-alike/app/](http://davidcole1977.github.io/tenori-on-alike/app/)
+[http://davidcole1977.github.io/tenori-on-alike/_app/](http://davidcole1977.github.io/tenori-on-alike/_app/)
 
 (It's currently unlikely to work on anything but recent versions of Chrome and Firefox on desktop browsers)
 
